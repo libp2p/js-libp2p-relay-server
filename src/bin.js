@@ -24,21 +24,24 @@ const createRelay = require('./index')
 async function main () {
   // Metrics
   let metricsServer
-  const metrics = !(argv.disableMetrics)
-  const metricsMa = multiaddr(argv.metricsMultiaddr || argv.ma || '/ip4/127.0.0.1/tcp/8003')
+  const metrics = !(argv.disableMetrics || process.env.DISABLE_METRICS)
+  const metricsMa = multiaddr(argv.metricsMultiaddr || argv.ma || process.env.METRICS_MULTIADDR || '/ip4/0.0.0.0/tcp/8003')
   const metricsAddr = metricsMa.nodeAddress()
 
   // multiaddrs
   const listenAddresses = getListenAddresses(argv)
   const announceAddresses = getAnnounceAddresses(argv)
 
+  log(`listenAddresses: ${listenAddresses.map((a) => a)}`)
+  announceAddresses.length && log(`announceAddresses: ${announceAddresses.map((a) => a)}`)
+
   // Should advertise
-  const shouldAdvertise = !(argv.disableAdvertise)
+  const shouldAdvertise = !(argv.disableAdvertise || process.env.DISABLE_ADVERTISE)
 
   // Delegate
   let delegateOptions
-  if (argv.delegateMultiaddr || argv.dm) {
-    const delegateAddr = multiaddr(argv.delegateMultiaddr || argv.dm).toOptions()
+  if (argv.delegateMultiaddr || argv.dm || process.env.DELEGATE_MULTIADDR) {
+    const delegateAddr = multiaddr(argv.delegateMultiaddr || argv.dm || process.env.DELEGATE_MULTIADDR).toOptions()
     delegateOptions = {
       host: delegateAddr.host,
       protocol: delegateAddr.port === '443' ? 'https' : 'http',
@@ -48,9 +51,10 @@ async function main () {
 
   // PeerId
   let peerId
-  if (argv.peerId) {
-    const peerData = fs.readFileSync(argv.peerId)
+  if (argv.peerId || process.env.PEER_ID) {
+    const peerData = fs.readFileSync(argv.peerId || process.env.PEER_ID)
     peerId = await PeerId.createFromJSON(JSON.parse(peerData))
+    log('PeerId provided was loaded.')
   } else {
     peerId = await PeerId.create()
     log('You are using an automatically generated peer.')

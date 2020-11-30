@@ -9,10 +9,8 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "test": "aegir test",
+    "test": "aegir test -t node",
     "test:node": "aegir test -t node",
-    "test:browser": "aegir test -t browser",
-    "test:types": "aegir ts -p check",
     "build": "aegir build",
     "release": "aegir release",
     "release-minor": "aegir release --type minor",

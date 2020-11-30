@@ -19,6 +19,8 @@
   - [Install](#install)
   - [CLI](#cli)
   - [Docker](#docker)
+  - [SSL](#ssl)
+  - [Debug](#debug)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -100,7 +102,34 @@ Note: In the future this will leverage libp2p's [DHT](https://github.com/libp2p/
 
 ### Docker
 
-TODO
+When running the hop relay server in Docker, you can configure the same parameters via environment variables, as follows:
+
+```sh
+PEER_ID='./id.json'
+LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000'
+ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA,/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
+METRICS_MULTIADDR='/ip4/127.0.0.1/tcp/8000'
+DISABLE_METRICS='true'
+DELEGATE_MULTIADDR='/dns4/node1.delegate.ipfs.io/tcp/443/https'
+DISABLE_ADVERTISE='true'
+```
+
+Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener
+
+```sh
+docker build NAME -t libp2p-hop-relay
+docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -d libp2p-hop-relay
+```
+
+### SSL
+
+You should setup an SSL certificate with nginx and proxy to the API. You can use a service that already offers an SSL certificate with the server and configure nginx, or you can create valid certificates with for example [Letsencrypt](https://certbot.eff.org/lets-encrypt/osx-nginx). Letsencrypt won’t give you a cert for an IP address (yet) so you need to connect via SSL to a domain name.
+
+With this, you should specify in your relay the announce multiaddrs for your listening transports. This is specially important for browser peers that will leverage this relay, as browser nodes can only dial peers behind a `DNS+WSS` multiaddr.
+
+### Debug
+
+You can debug the relay by setting the `DEBUG` environment variable. For instance, you can set it to `libp2p*`.
 
 ## Contribute
 

@@ -19,11 +19,11 @@ const ipfsHttpClient = require('ipfs-http-client')
  * @property {number} port
  */
 
- const defaulDelegateOptions = {
-   host: 'node0.delegate.ipfs.io',
-   protocol: 'https',
-   port: 443
- }
+const defaulDelegateOptions = {
+  host: 'node0.delegate.ipfs.io',
+  protocol: 'https',
+  port: 443
+}
 
 /**
  * @typedef {Object} HopRelayOptions
@@ -41,7 +41,7 @@ const ipfsHttpClient = require('ipfs-http-client')
  * @returns {Promise<Libp2p>}
  */
 function create ({ peerId, delegateOptions = defaulDelegateOptions, listenAddresses = [], announceAddresses = [], shouldAdvertise = true }) {
-  let contentRouting = []
+  const contentRouting = []
 
   if (shouldAdvertise) {
     const httpClient = ipfsHttpClient(delegateOptions)
@@ -56,7 +56,6 @@ function create ({ peerId, delegateOptions = defaulDelegateOptions, listenAddres
       connEncryption: [Crypto],
       contentRouting
     },
-    peerId,
     addresses: {
       listen: listenAddresses,
       announce: announceAddresses

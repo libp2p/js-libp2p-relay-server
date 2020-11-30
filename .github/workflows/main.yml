@@ -14,7 +14,6 @@ jobs:
     - uses: actions/checkout@v2
     - run: yarn
     - run: yarn lint
-    - run: yarn build
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}

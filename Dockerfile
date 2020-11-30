@@ -21,15 +21,8 @@ RUN npm install --production
 COPY --chown=node:node ./src ./src
 COPY --chown=node:node ./README.md ./
 
-# Environment variables
-
-
-# hop-relay-server defaults to 15003
-EXPOSE 15003
-
-# metrics defaults to 8003
-EXPOSE 8003
+ENV DEBUG libp2p*
 
 # Available overrides (defaults shown):
 # Server logging can be enabled via the DEBUG environment variable
-CMD [ "/usr/local/bin/dumb-init", "node", "src/server/bin.js"]
+CMD [ "/usr/local/bin/dumb-init", "node", "src/bin.js"]
