@@ -2,10 +2,10 @@ name: ci
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   check:
@@ -15,12 +15,6 @@ jobs:
     - run: yarn
     - run: yarn lint
     - run: yarn build
-    - uses: gozala/typescript-error-reporter-action@v1.0.4
-    - run: yarn aegir dep-check -- -i aegir
-    - uses: ipfs/aegir/actions/bundle-size@master
-      name: size
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
   test-node:
     needs: check
     runs-on: ${{ matrix.os }}

@@ -22,7 +22,7 @@ function getAnnounceAddresses(argv) {
 module.exports.getAnnounceAddresses = getAnnounceAddresses
 
 function getListenAddresses(argv) {
-  const listenAddr = argv.listenMultiaddrs || argv.lm || '/ip4/127.0.0.1/tcp/0/ws'
+  const listenAddr = argv.listenMultiaddrs || argv.lm || '/ip4/127.0.0.1/tcp/15003/ws'
   const listenAddresses = [multiaddr(listenAddr)]
 
   if (argv.listenMultiaddrs || argv.lm) {
