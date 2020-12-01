@@ -1,7 +1,7 @@
 FROM node:lts-alpine
 
 # Install deps
-RUN apk add --update git build-base python3 libressl-dev ca-certificates
+RUN apk add --update git build-base python3
 
 # Get dumb-init to allow quit running interactively
 RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 && chmod +x /usr/local/bin/dumb-init
