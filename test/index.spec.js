@@ -8,7 +8,7 @@ const Peers = require('./fixtures/peers')
 
 const createRelayServer = require('../src')
 
-describe('Relay Hop Server', () => {
+describe('Relay Server', () => {
   let relay
   let peerId
 
@@ -18,16 +18,6 @@ describe('Relay Hop Server', () => {
 
   afterEach(async () => {
     relay && await relay.stop()
-  })
-
-  it('fails to create a relay if no peerId is provided', async () => {
-    try {
-      relay = await createRelayServer({})
-    } catch (err) {
-      expect(err).to.exist()
-      return
-    }
-    throw new Error('should fail to create a relay if no peerId is provided')
   })
 
   it('can create an start a relay with only a peerId', async () => {
@@ -62,5 +52,30 @@ describe('Relay Hop Server', () => {
 
     expect(relay.multiaddrs).to.have.lengthOf(announceAddresses.length)
     relay.multiaddrs.forEach((m) => announceAddresses.includes(m.toString()))
+  })
+
+  it('can specify discovery topics to discover', async () => {
+    const topics = ['_peer-discovery._app1._pubsub', '_peer_discovery._app2._pubsub']
+    relay = await createRelayServer({
+      peerId,
+      pubsubDiscoveryTopics: topics
+    })
+
+    await relay.start()
+
+    const subsTopics = relay.pubsub.getTopics()
+    expect(subsTopics).to.have.lengthOf(topics.length)
+    subsTopics.forEach((m) => topics.includes(m.toString()))
+  })
+
+  it('can disable discovery', async () => {
+    relay = await createRelayServer({
+      peerId,
+      pubsubDiscoveryEnabled: false
+    })
+
+    await relay.start()
+
+    expect(relay._discovery.size).to.eql(0)
   })
 })

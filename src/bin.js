@@ -3,12 +3,12 @@
 'use strict'
 
 // Usage: $0 [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>]
-//           [--metricsMultiaddr <ma>] [--disableMetrics] [--delegateMultiaddr <ma>] [--disableAdvertise]
+//           [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery] [--discoveryTopics <topic> ... <topic>]
 
 /* eslint-disable no-console */
 
 const debug = require('debug')
-const log = debug('libp2p:hop-relay:bin')
+const log = debug('libp2p:relay:bin')
 
 const fs = require('fs')
 const http = require('http')
@@ -18,7 +18,7 @@ const argv = require('minimist')(process.argv.slice(2))
 const multiaddr = require('multiaddr')
 const PeerId = require('peer-id')
 
-const { getAnnounceAddresses, getListenAddresses } = require('./utils')
+const { getAnnounceAddresses, getListenAddresses, getDiscoveryTopics } = require('./utils')
 const createRelay = require('./index')
 
 async function main () {
@@ -35,19 +35,9 @@ async function main () {
   log(`listenAddresses: ${listenAddresses.map((a) => a)}`)
   announceAddresses.length && log(`announceAddresses: ${announceAddresses.map((a) => a)}`)
 
-  // Should advertise
-  const shouldAdvertise = !(argv.disableAdvertise || process.env.DISABLE_ADVERTISE)
-
-  // Delegate
-  let delegateOptions
-  if (argv.delegateMultiaddr || argv.dm || process.env.DELEGATE_MULTIADDR) {
-    const delegateAddr = multiaddr(argv.delegateMultiaddr || argv.dm || process.env.DELEGATE_MULTIADDR).toOptions()
-    delegateOptions = {
-      host: delegateAddr.host,
-      protocol: delegateAddr.port === '443' ? 'https' : 'http',
-      port: delegateAddr.port
-    }
-  }
+  // Discovery
+  const pubsubDiscoveryEnabled = !(argv.disablePubsubDiscovery || process.env.DISABLE_PUBSUB_DISCOVERY)
+  const pubsubDiscoveryTopics = getDiscoveryTopics(argv)
 
   // PeerId
   let peerId
@@ -66,18 +56,13 @@ async function main () {
     peerId,
     listenAddresses,
     announceAddresses,
-    shouldAdvertise,
-    delegateOptions
-  })
-
-  relay.peerStore.on('change:multiaddrs', ({ peerId: changedPeerId, multiaddrs }) => {
-    if (peerId.equals(changedPeerId)) {
-      console.log('Relay server listening on:')
-      multiaddrs.forEach((m) => console.log(m))
-    }
+    pubsubDiscoveryEnabled,
+    pubsubDiscoveryTopics
   })
 
   await relay.start()
+  console.log('Relay server listening on:')
+  relay.multiaddrs.forEach((m) => console.log(m))
 
   if (metrics) {
     log('enabling metrics')
