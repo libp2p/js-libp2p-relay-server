@@ -20,6 +20,10 @@
   - [CLI](#cli)
   - [Docker](#docker)
   - [SSL](#ssl)
+- [Configuration](#configuration)
+  - [Metrics](#metrics)
+  - [Discovery](#discovery)
+  - [Docker](#docker)
   - [Debug](#debug)
 - [Contribute](#contribute)
 - [License](#license)
@@ -50,6 +54,8 @@ After installing the relay server, you can use its binary. It accepts several ar
 libp2p-relay-server [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>] [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery]
 ```
 
+The main configuration you should focus are the `PeerId` and the `Multiaddrs`, which are detailed next.
+
 #### PeerId
 
 You can create a [PeerId](https://github.com/libp2p/js-peer-id) via its [CLI](https://github.com/libp2p/js-peer-id#cli). 
@@ -68,7 +74,36 @@ libp2p-relay-server --peerId id.json --listenMultiaddrs '/ip4/127.0.0.1/tcp/1500
 
 By default it listens on `/ip4/127.0.0.1/tcp/15003/ws` and has no announce multiaddrs specified.
 
-#### Metrics
+### Docker
+
+When running the relay server in Docker, you can configure the same parameters via environment variables, as follows:
+
+```sh
+PEER_ID='./id.json'
+LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000'
+ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA,/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
+```
+
+Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener.
+
+Example:
+
+```sh
+docker build NAME -t libp2p-relay
+docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -d libp2p-relay
+```
+
+### SSL
+
+You should setup an SSL certificate with nginx and proxy to the API. You can use a service that already offers an SSL certificate with the server and configure nginx, or you can create valid certificates with for example [Letsencrypt](https://certbot.eff.org/lets-encrypt/osx-nginx). Letsencrypt won’t give you a cert for an IP address (yet) so you need to connect via SSL to a domain name.
+
+With this, you should specify in your relay the announce multiaddrs for your listening transports. This is specially important for browser peers that will leverage this relay, as browser nodes can only dial peers behind a `DNS+WSS` multiaddr.
+
+## Configuration
+
+Besides the `PeerId` and `Multiaddrs`, this server can also have other configurations for fine tuning.
+
+### Metrics
 
 Metrics are enabled by default on `/ip4/127.0.0.1/tcp/8003` via Prometheus. This address can also be modified with:
 
@@ -82,7 +117,7 @@ Moreover, metrics can also be disabled with:
 libp2p-relay-server --disableMetrics
 ```
 
-#### Discovery
+### Discovery
 
 A discovery module [libp2p/js-libp2p-pubsub-peer-discovery](https://github.com/libp2p/js-libp2p-pubsub-peer-discovery) is configured and enabled by default. It can be disabled with:
 
@@ -92,32 +127,22 @@ libp2p-relay-server --disablePubsubDiscovery
 
 ### Docker
 
-When running the relay server in Docker, you can configure the same parameters via environment variables, as follows:
+When running the relay server in Docker, you can configure other parameters via environment variables, as follows:
 
 ```sh
-PEER_ID='./id.json'
-LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000'
-ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA,/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
 METRICS_MULTIADDR='/ip4/127.0.0.1/tcp/8000'
 DISABLE_METRICS='true'
 DISABLE_PUBSUB_DISCOVERY='true'
-DISCOVERY_TOPICS='_peer-discovery._app1._pubsub,_peer_discovery._app2._pubsub'
 ```
 
 Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener.
 
-Configuration example:
+Example:
 
 ```sh
 docker build NAME -t libp2p-relay
-docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -d libp2p-relay
+docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -e METRICS_MULTIADDR='/ip4/127.0.0.1/tcp/8000' -e DISABLE_PUBSUB_DISCOVERY='true' -d libp2p-relay
 ```
-
-### SSL
-
-You should setup an SSL certificate with nginx and proxy to the API. You can use a service that already offers an SSL certificate with the server and configure nginx, or you can create valid certificates with for example [Letsencrypt](https://certbot.eff.org/lets-encrypt/osx-nginx). Letsencrypt won’t give you a cert for an IP address (yet) so you need to connect via SSL to a domain name.
-
-With this, you should specify in your relay the announce multiaddrs for your listening transports. This is specially important for browser peers that will leverage this relay, as browser nodes can only dial peers behind a `DNS+WSS` multiaddr.
 
 ### Debug
 
