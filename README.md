@@ -44,10 +44,10 @@ Now you can use the cli command `libp2p-relay-server` to spawn an out of the box
 
 ### CLI
 
-After installing the relay server, you can use its binary. It accepts several arguments: `--peerId`, `--listenMultiaddrs`, `--announceMultiaddrs`, `--metricsMultiaddr`, `--disableMetrics`, `--disablePubsubDiscovery` and `--discoveryTopics`.
+After installing the relay server, you can use its binary. It accepts several arguments: `--peerId`, `--listenMultiaddrs`, `--announceMultiaddrs`, `--metricsMultiaddr`, `--disableMetrics` and `--disablePubsubDiscovery`.
 
 ```sh
-libp2p-relay-server [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>] [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery] [--discoveryTopics <topic> ... <topic>]
+libp2p-relay-server [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>] [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery]
 ```
 
 #### PeerId
@@ -66,7 +66,7 @@ You can specify the libp2p rendezvous server listen and announce multiaddrs. Thi
 libp2p-relay-server --peerId id.json --listenMultiaddrs '/ip4/127.0.0.1/tcp/15002/ws' '/ip4/127.0.0.1/tcp/8000' --announceMultiaddrs '/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA' '/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
 ```
 
-By default it listens on `/ip4/127.0.0.1/tcp/15002/ws` and has no announce multiaddrs specified.
+By default it listens on `/ip4/127.0.0.1/tcp/15003/ws` and has no announce multiaddrs specified.
 
 #### Metrics
 
@@ -90,12 +90,6 @@ A discovery module [libp2p/js-libp2p-pubsub-peer-discovery](https://github.com/l
 libp2p-relay-server --disablePubsubDiscovery
 ```
 
-This discovery module uses `_peer-discovery._p2p._pubsub` as a topic for enabling peer discovery. However, other topics can be used with:
-
-```sh
-libp2p-relay-server --discoveryTopics '_peer-discovery._app1._pubsub' '_peer_discovery._app2._pubsub'
-```
-
 ### Docker
 
 When running the relay server in Docker, you can configure the same parameters via environment variables, as follows:
@@ -110,7 +104,9 @@ DISABLE_PUBSUB_DISCOVERY='true'
 DISCOVERY_TOPICS='_peer-discovery._app1._pubsub,_peer_discovery._app2._pubsub'
 ```
 
-Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener
+Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener.
+
+Configuration example:
 
 ```sh
 docker build NAME -t libp2p-relay

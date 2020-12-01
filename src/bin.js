@@ -3,7 +3,7 @@
 'use strict'
 
 // Usage: $0 [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>]
-//           [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery] [--discoveryTopics <topic> ... <topic>]
+//           [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery]
 
 /* eslint-disable no-console */
 
@@ -18,7 +18,7 @@ const argv = require('minimist')(process.argv.slice(2))
 const multiaddr = require('multiaddr')
 const PeerId = require('peer-id')
 
-const { getAnnounceAddresses, getListenAddresses, getDiscoveryTopics } = require('./utils')
+const { getAnnounceAddresses, getListenAddresses } = require('./utils')
 const createRelay = require('./index')
 
 async function main () {
@@ -37,7 +37,6 @@ async function main () {
 
   // Discovery
   const pubsubDiscoveryEnabled = !(argv.disablePubsubDiscovery || process.env.DISABLE_PUBSUB_DISCOVERY)
-  const pubsubDiscoveryTopics = getDiscoveryTopics(argv)
 
   // PeerId
   let peerId
@@ -56,8 +55,7 @@ async function main () {
     peerId,
     listenAddresses,
     announceAddresses,
-    pubsubDiscoveryEnabled,
-    pubsubDiscoveryTopics
+    pubsubDiscoveryEnabled
   })
 
   await relay.start()

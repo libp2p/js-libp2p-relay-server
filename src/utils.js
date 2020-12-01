@@ -14,22 +14,6 @@ function getExtraParams (alias1, alias2) {
   return params
 }
 
-function getDiscoveryTopics (argv) {
-  let discoveryTopics = ['_peer-discovery._p2p._pubsub']
-
-  const argvTopic = argv.discoveryTopics || argv.dt
-  if (argvTopic) {
-    discoveryTopics = [argvTopic]
-
-    const extraParams = getExtraParams('--discoveryTopics', '--dt')
-    extraParams.forEach((p) => discoveryTopics.push(p))
-  } else if (process.env.DISCOVERY_TOPICS) {
-    discoveryTopics = process.env.DISCOVERY_TOPICS.split(',')
-  }
-
-  return discoveryTopics
-}
-
 function getAnnounceAddresses (argv) {
   let announceAddresses = []
   const argvAddr = argv.announceMultiaddrs || argv.am
