@@ -54,20 +54,6 @@ describe('Relay Server', () => {
     relay.multiaddrs.forEach((m) => announceAddresses.includes(m.toString()))
   })
 
-  it('can specify discovery topics to discover', async () => {
-    const topics = ['_peer-discovery._app1._pubsub', '_peer_discovery._app2._pubsub']
-    relay = await createRelayServer({
-      peerId,
-      pubsubDiscoveryTopics: topics
-    })
-
-    await relay.start()
-
-    const subsTopics = relay.pubsub.getTopics()
-    expect(subsTopics).to.have.lengthOf(topics.length)
-    subsTopics.forEach((m) => topics.includes(m.toString()))
-  })
-
   it('can disable discovery', async () => {
     relay = await createRelayServer({
       peerId,

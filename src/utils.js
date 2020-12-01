@@ -47,7 +47,6 @@ function getListenAddresses (argv) {
 }
 
 module.exports = {
-  getDiscoveryTopics,
   getAnnounceAddresses,
   getListenAddresses
 }
