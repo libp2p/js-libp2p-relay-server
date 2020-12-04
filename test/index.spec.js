@@ -37,11 +37,13 @@ describe('Relay Server', () => {
     await relay.start()
 
     expect(relay.multiaddrs).to.have.lengthOf(listenAddresses.length)
-    relay.multiaddrs.forEach((m) => listenAddresses.includes(m.toString()))
+    relay.multiaddrs.forEach((m) => {
+      expect(listenAddresses.includes(m.toString())).to.eql(true)
+    })
   })
 
   it('can specify announceMultiaddrs for the relay', async () => {
-    const announceAddresses = ['/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA']
+    const announceAddresses = ['/dns4/test.io/tcp/443/wss']
 
     relay = await createRelayServer({
       peerId,
@@ -51,7 +53,9 @@ describe('Relay Server', () => {
     await relay.start()
 
     expect(relay.multiaddrs).to.have.lengthOf(announceAddresses.length)
-    relay.multiaddrs.forEach((m) => announceAddresses.includes(m.toString()))
+    relay.multiaddrs.forEach((m) => {
+      expect(announceAddresses.includes(m.toString())).to.eql(true)
+    })
   })
 
   it('can disable discovery', async () => {

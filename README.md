@@ -48,49 +48,57 @@ Now you can use the cli command `libp2p-relay-server` to spawn an out of the box
 
 ### CLI
 
-After installing the relay server, you can use its binary. It accepts several arguments: `--peerId`, `--listenMultiaddrs`, `--announceMultiaddrs`, `--metricsMultiaddr`, `--disableMetrics` and `--disablePubsubDiscovery`.
+After installing the relay server, you can use its binary. It accepts several arguments: `--peerId`, `--listenMultiaddrs`, `--announceMultiaddrs`, `--metricsPort`, `--disableMetrics` and `--disablePubsubDiscovery`.
 
 ```sh
-libp2p-relay-server [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>] [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery]
+libp2p-relay-server [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>] [--metricsPort <port>] [--disableMetrics] [--disablePubsubDiscovery]
 ```
 
-The main configuration you should focus are the `PeerId` and the `Multiaddrs`, which are detailed next.
+The main configuration you *should* include are the `PeerId` and `Multiaddrs`, which are detailed next. Using a consistent PeerId will ensure your node's identity is consistent across restarts, and the Multiaddrs will allow you to appropriate bind your local and external addresses so that other peers can connect to you.
 
 #### PeerId
 
 You can create a [PeerId](https://github.com/libp2p/js-peer-id) via its [CLI](https://github.com/libp2p/js-peer-id#cli). 
 
+Once you have a generated PeerId json file, you can start the relay with that PeerId by specifying its path via the `--peerId` flag:
 ```sh
-libp2p-relay-server --peerId id.json
+libp2p-relay-server --peerId /path/to/peer-id.json
 ```
 
 #### Multiaddrs
 
-You can specify the libp2p rendezvous server listen and announce multiaddrs. This server is configured with [libp2p-tcp](https://github.com/libp2p/js-libp2p-tcp) and [libp2p-websockets](https://github.com/libp2p/js-libp2p-websockets) and addresses with this transports should be used. It can always be modified via the API.
+You can specify the libp2p rendezvous server listen and announce multiaddrs. This server is configured with [libp2p-tcp](https://github.com/libp2p/js-libp2p-tcp) and [libp2p-websockets](https://github.com/libp2p/js-libp2p-websockets), so you will only be able to specify addresses for these transports.
 
 ```sh
-libp2p-relay-server --peerId id.json --listenMultiaddrs '/ip4/127.0.0.1/tcp/15002/ws' '/ip4/127.0.0.1/tcp/8000' --announceMultiaddrs '/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA' '/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
+libp2p-relay-server --peerId /path/to/peer-id.json --listenMultiaddrs '/ip4/127.0.0.1/tcp/15002/ws' '/ip4/127.0.0.1/tcp/8001' --announceMultiaddrs '/dns4/test.io/tcp' '/dns4/test.io/tcp/443/wss'
 ```
 
-By default it listens on `/ip4/127.0.0.1/tcp/15003/ws` and has no announce multiaddrs specified.
+By default it listens on `/ip4/127.0.0.1/tcp/8000` and `/ip4/127.0.0.1/tcp/15003/ws`. It has no announce multiaddrs specified.
 
 ### Docker
 
 When running the relay server in Docker, you can configure the same parameters via environment variables, as follows:
 
 ```sh
-PEER_ID='./id.json'
-LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000'
-ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA,/dns6/test.io/tcp/443/wss/p2p/12D3KooWAuEpJKhCAfNcHycKcZCv9Qy69utLAJ3MobjKpsoKbrGA'
+PEER_ID='/var/local/myapp/id.json'
+LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8001'
+ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss,/dns6/test.io/tcp/443/wss'
 ```
 
-Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener.
+Docker does not provide a clean way of adding a file using the RUN command. As a file should be added before running the server, the easiest way is to create a `Dockerfile` that extends this Docker image and copy a file to a path that you can reference.
+
+```
+FROM libp2p/libp2p-relay-server
+COPY file /id.json /var/local/myapp/
+```
+
+Please note that you should expose the listening ports with the docker run command. The default ports used are `8003` for the metrics, `8000` for the tcp listener and `150003` for the websockets listener.
 
 Example:
 
 ```sh
-docker build NAME -t libp2p-relay
-docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -d libp2p-relay
+docker build . -t libp2p-relay
+docker run -p 8003:8003 -p 15002:15002 -p 8001:8001 -e PEER_ID='/var/local/myapp/id.json' -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8001' -e ANNOUNCE_MULTIADDRS='/dns4/localhost/tcp/8000,/dns4/localhost/tcp/15002/ws' -d libp2p-relay
 ```
 
 ### SSL
@@ -105,10 +113,10 @@ Besides the `PeerId` and `Multiaddrs`, this server can also have other configura
 
 ### Metrics
 
-Metrics are enabled by default on `/ip4/127.0.0.1/tcp/8003` via Prometheus. This address can also be modified with:
+Metrics are enabled by default on `/ip4/127.0.0.1/tcp/8003` via Prometheus. This port can also be modified with:
 
 ```sh
-libp2p-relay-server --metricsMultiaddr '/ip4/127.0.0.1/tcp/8000'
+libp2p-relay-server --metricsPort '8008'
 ```
 
 Moreover, metrics can also be disabled with:
@@ -127,26 +135,19 @@ libp2p-relay-server --disablePubsubDiscovery
 
 ### Docker
 
-When running the relay server in Docker, you can configure other parameters via environment variables, as follows:
+On docker you can also specify the configurations above with the following environment variables:
 
 ```sh
-METRICS_MULTIADDR='/ip4/127.0.0.1/tcp/8000'
+METRICS_PORT='8008'
 DISABLE_METRICS='true'
 DISABLE_PUBSUB_DISCOVERY='true'
 ```
 
-Please note that you should expose expose the used ports with the docker run command. The default ports used are `8003` for the metrics and `150003` for the websockets listener.
-
-Example:
-
-```sh
-docker build NAME -t libp2p-relay
-docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8000' -e METRICS_MULTIADDR='/ip4/127.0.0.1/tcp/8000' -e DISABLE_PUBSUB_DISCOVERY='true' -d libp2p-relay
-```
+Please note that you should expose expose the used ports with the docker run command.
 
 ### Debug
 
-You can debug the relay by setting the `DEBUG` environment variable. For instance, you can set it to `libp2p*`.
+You can debug the relay by setting the `DEBUG` environment variable. For instance, you can set it to `libp2p*`. These logs can be noisy so you may wish to tune the namespaces that are logging, see the [Debug module](https://github.com/visionmedia/debug) for detailed usage.
 
 ## Contribute
 

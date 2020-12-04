@@ -3,8 +3,8 @@
 const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
 const Websockets = require('libp2p-websockets')
-const Muxer = require('libp2p-mplex')
-const { NOISE: Crypto } = require('libp2p-noise')
+const MPLEX = require('libp2p-mplex')
+const { NOISE } = require('libp2p-noise')
 const GossipSub = require('libp2p-gossipsub')
 const PubsubPeerDiscovery = require('libp2p-pubsub-peer-discovery')
 
@@ -32,8 +32,8 @@ function create ({ peerId, listenAddresses = [], announceAddresses = [], pubsubD
     peerId,
     modules: {
       transport: [Websockets, TCP],
-      streamMuxer: [Muxer],
-      connEncryption: [Crypto],
+      streamMuxer: [MPLEX],
+      connEncryption: [NOISE],
       pubsub: GossipSub,
       peerDiscovery: [PubsubPeerDiscovery]
     },

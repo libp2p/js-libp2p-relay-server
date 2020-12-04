@@ -31,7 +31,7 @@ function getAnnounceAddresses (argv) {
 }
 
 function getListenAddresses (argv) {
-  let listenAddresses = ['/ip4/127.0.0.1/tcp/15003/ws']
+  let listenAddresses = ['/ip4/127.0.0.1/tcp/15003/ws', '/ip4/127.0.0.1/tcp/8000']
   const argvAddr = argv.listenMultiaddrs || argv.lm
 
   if (argvAddr) {

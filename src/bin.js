@@ -3,7 +3,7 @@
 'use strict'
 
 // Usage: $0 [--peerId <jsonFilePath>] [--listenMultiaddrs <ma> ... <ma>] [--announceMultiaddrs <ma> ... <ma>]
-//           [--metricsMultiaddr <ma>] [--disableMetrics] [--disablePubsubDiscovery]
+//           [--metricsPort <port>] [--disableMetrics] [--disablePubsubDiscovery]
 
 /* eslint-disable no-console */
 
@@ -15,7 +15,6 @@ const http = require('http')
 const menoetius = require('menoetius')
 const argv = require('minimist')(process.argv.slice(2))
 
-const multiaddr = require('multiaddr')
 const PeerId = require('peer-id')
 
 const { getAnnounceAddresses, getListenAddresses } = require('./utils')
@@ -25,8 +24,7 @@ async function main () {
   // Metrics
   let metricsServer
   const metrics = !(argv.disableMetrics || process.env.DISABLE_METRICS)
-  const metricsMa = multiaddr(argv.metricsMultiaddr || argv.ma || process.env.METRICS_MULTIADDR || '/ip4/0.0.0.0/tcp/8003')
-  const metricsAddr = metricsMa.nodeAddress()
+  const metricsPort = argv.metricsPort || argv.mp || process.env.METRICS_PORT || '8003'
 
   // multiaddrs
   const listenAddresses = getListenAddresses(argv)
@@ -73,8 +71,8 @@ async function main () {
 
     menoetius.instrument(metricsServer)
 
-    metricsServer.listen(metricsAddr.port, metricsAddr.address, () => {
-      console.log(`metrics server listening on ${metricsAddr.port}`)
+    metricsServer.listen(metricsPort, '0.0.0.0', () => {
+      console.log(`metrics server listening on ${metricsPort}`)
     })
   }
 
