@@ -61,8 +61,10 @@ The main configuration you *should* include are the `PeerId` and `Multiaddrs`, w
 You can create a [PeerId](https://github.com/libp2p/js-peer-id) via its [CLI](https://github.com/libp2p/js-peer-id#cli). 
 
 Once you have a generated PeerId json file, you can start the relay with that PeerId by specifying its path via the `--peerId` flag:
+
 ```sh
-libp2p-relay-server --peerId /path/to/peer-id.json
+peer-id --type=ed25519 > id.json
+libp2p-relay-server --peerId ./id.json
 ```
 
 #### Multiaddrs
@@ -80,16 +82,9 @@ By default it listens on `/ip4/127.0.0.1/tcp/8000` and `/ip4/127.0.0.1/tcp/15003
 When running the relay server in Docker, you can configure the same parameters via environment variables, as follows:
 
 ```sh
-PEER_ID='/var/local/myapp/id.json'
+PEER_ID='/etc/opt/relay/id.json'
 LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8001'
 ANNOUNCE_MULTIADDRS='/dns4/test.io/tcp/443/wss,/dns6/test.io/tcp/443/wss'
-```
-
-Docker does not provide a clean way of adding a file using the RUN command. As a file should be added before running the server, the easiest way is to create a `Dockerfile` that extends this Docker image and copy a file to a path that you can reference.
-
-```
-FROM libp2p/libp2p-relay-server
-COPY file /id.json /var/local/myapp/
 ```
 
 Please note that you should expose the listening ports with the docker run command. The default ports used are `8003` for the metrics, `8000` for the tcp listener and `150003` for the websockets listener.
@@ -97,8 +92,14 @@ Please note that you should expose the listening ports with the docker run comma
 Example:
 
 ```sh
+peer-id --type=ed25519 > id.json
 docker build . -t libp2p-relay
-docker run -p 8003:8003 -p 15002:15002 -p 8001:8001 -e PEER_ID='/var/local/myapp/id.json' -e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/15002/ws,/ip4/127.0.0.1/tcp/8001' -e ANNOUNCE_MULTIADDRS='/dns4/localhost/tcp/8000,/dns4/localhost/tcp/15002/ws' -d libp2p-relay
+docker run -p 8003:8003 -p 15002:15002 -p 8000:8000 \
+-e LISTEN_MULTIADDRS='/ip4/127.0.0.1/tcp/8000,/ip4/127.0.0.1/tcp/15002/ws' \
+-e ANNOUNCE_MULTIADDRS='/dns4/localhost/tcp/8000,/dns4/localhost/tcp/15002/ws' \
+-e PEER_ID='/etc/opt/relay/id.json' \
+-v $PWD/id.json:/etc/opt/relay/id.json \
+-d libp2p-relay
 ```
 
 ### SSL
