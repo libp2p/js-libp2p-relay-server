@@ -1,22 +1,57 @@
 {
-  "name": "libp2p-hop-relay-server",
+  "name": "libp2p-relay-server",
   "version": "0.0.0",
   "description": "A out of the box libp2p relay server with HOP",
+  "leadMaintainer": "Vasco Santos <santos.vasco10@gmail.com>",
   "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "libp2p-relay-server": "src/bin.js"
   },
+  "scripts": {
+    "lint": "aegir lint",
+    "test": "aegir test -t node",
+    "test:node": "aegir test -t node",
+    "build": "aegir build",
+    "release": "aegir release",
+    "release-minor": "aegir release --type minor",
+    "release-major": "aegir release --type major",
+    "docs": "aegir docs",
+    "size": "aegir build -b"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vasco-santos/js-libp2p-hop-relay-server.git"
   },
   "keywords": [
-    "libp2p"
+    "libp2p",
+    "relay",
+    "auto relay",
+    "hop"
   ],
-  "author": "",
+  "author": "Vasco Santos <santos.vasco10@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vasco-santos/js-libp2p-hop-relay-server/issues"
   },
-  "homepage": "https://github.com/vasco-santos/js-libp2p-hop-relay-server#readme"
+  "homepage": "https://github.com/vasco-santos/js-libp2p-hop-relay-server#readme",
+  "dependencies": {
+    "libp2p": "libp2p/js-libp2p#0.30.x",
+    "libp2p-gossipsub": "^0.7.0",
+    "libp2p-mplex": "^0.10.1",
+    "libp2p-noise": "^2.0.1",
+    "libp2p-pubsub-peer-discovery": "^3.0.0",
+    "libp2p-tcp": "^0.15.1",
+    "libp2p-websockets": "^0.14.0",
+    "menoetius": "0.0.2",
+    "minimist": "^1.2.5",
+    "multiaddr": "^8.1.1",
+    "peer-id": "^0.14.2"
+  },
+  "devDependencies": {
+    "aegir": "^29.1.0"
+  }
 }
