@@ -1,6 +1,6 @@
 {
   "name": "libp2p-relay-server",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A out of the box libp2p relay server with HOP",
   "leadMaintainer": "Vasco Santos <santos.vasco10@gmail.com>",
   "main": "src/index.js",
@@ -53,5 +53,8 @@
   },
   "devDependencies": {
     "aegir": "^29.1.0"
-  }
+  },
+  "contributors": [
+    "Vasco Santos <vasco.santos@moxy.studio>"
+  ]
 }
