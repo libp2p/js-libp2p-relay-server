@@ -6,7 +6,7 @@
 [![](https://img.shields.io/discourse/https/discuss.libp2p.io/posts.svg)](https://discuss.libp2p.io)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/libp2p/js-libp2p-relay-server/ci?label=ci&style=flat-square)](https://github.com/libp2p/js-libp2p-relay-server/actions?query=branch%3Amaster+workflow%3Aci+)
 
-> An out of the box libp2p relay server with HOP
+> An out of the box libp2p relay server with HOP enabled
 
 ## Lead Maintainer <!-- omit in toc -->
 
