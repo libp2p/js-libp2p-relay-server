@@ -58,7 +58,7 @@ async function main () {
 
   await relay.start()
   console.log('Relay server listening on:')
-  relay.multiaddrs.forEach((m) => console.log(m))
+  relay.multiaddrs.forEach((m) => console.log(`${m}/p2p/${relay.peerId.toB58String()}`))
 
   if (metrics) {
     log('enabling metrics')
