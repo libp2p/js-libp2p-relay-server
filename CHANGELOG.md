@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/vasco-santos/js-libp2p-hop-relay-server/compare/v0.1.2...v0.2.0) (2021-05-26)
+
+
+### Bug Fixes
+
+* include peer ID in console output ([#5](https://github.com/vasco-santos/js-libp2p-hop-relay-server/issues/5)) ([035eed1](https://github.com/vasco-santos/js-libp2p-hop-relay-server/commit/035eed17fa94428b91ead55afc9ec67d5d7ad86d))
+
+
+
 ## [0.1.2](https://github.com/vasco-santos/js-libp2p-hop-relay-server/compare/v0.1.1...v0.1.2) (2020-12-31)
 
 
