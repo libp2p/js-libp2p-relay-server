@@ -1,3 +1,7 @@
+# [0.3.0](https://github.com/vasco-santos/js-libp2p-hop-relay-server/compare/v0.2.0...v0.3.0) (2021-08-17)
+
+
+
 # [0.2.0](https://github.com/vasco-santos/js-libp2p-hop-relay-server/compare/v0.1.2...v0.2.0) (2021-05-26)
 
 
