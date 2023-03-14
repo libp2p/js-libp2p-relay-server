@@ -1,3 +1,7 @@
+# 🚧 This project is not actively maintained and is unsupported 🚧
+
+----
+
 # js-libp2p-relay-server <!-- omit in toc -->
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://protocol.ai)
